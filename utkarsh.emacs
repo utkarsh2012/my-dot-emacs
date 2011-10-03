@@ -4,9 +4,39 @@
 ;; evaluating this file and print errors in the *Messags* buffer.
 ;; Use this file in place of ~/.emacs (which is loaded as well.)
 
+;;    ___ _ __ ___   __ _  ___ ___
+;;   / _ \ '_ ` _ \ / _` |/ __/ __|
+;;  |  __/ | | | | | (_| | (__\__ \
+;; (_)___|_| |_| |_|\__,_|\___|___/
+;;
+(display-time)
+(global-set-key "\C-l" 'goto-line)
+(set (make-local-variable 'fill-column) 130)
+(set-fringe-style -1)
+(tooltip-mode -1)
+
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(global-hl-line-mode 1)
+(setq standard-indent 2)
+(setq scroll-step 1)
+(mouse-wheel-mode t)
+
+;;Enable tab
+(global-set-key (kbd "TAB") 'self-insert-command);
+
+;;Deft in the scratch
+(setq initial-major-mode 'deft)
+
+(require 'remember)
 (setq inhibit-splash-screen t)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-;(load-file "~/dev/emacs/emacs-for-python/epy-init.el")
+
+(add-to-list 'load-path "/Users/zengr/dev/emacs/deft")
+(require 'deft)
+(setq deft-extension "txt")
+(setq deft-directory "~/Dropbox/notes")
+(setq deft-text-mode 'markdown-mode)
 
 (add-to-list 'load-path "~/dev/emacs/emacs-for-python") ;; tell where to load the various files
 (require 'epy-setup) ;; It will setup other loads, it is required!
@@ -15,19 +45,17 @@
 (require 'epy-editing) ;; For configurations related to editing [optional]
 ;(require 'epy-bindings) ;; For my suggested keybindings [optional]
 
-
 ;No backup file (~)
 (setq make-backup-files nil)
-
-;Line number
-;(require 'linum)
-;(global-linum-mode)
+;; Show line and column number
+(line-number-mode 1)
+(column-number-mode 1)
 
 (add-to-list 'load-path "~/dev/emacs")
-
 ; For Solarized theme
-(add-to-list 'load-path "~/dev/emacs/emacs-color-theme-solarized")
-(require 'color-theme-solarized)
+;;(add-to-list 'load-path "~/dev/emacs/emacs-color-theme-solarized")
+;;(require 'color-theme-solarized)
+;;(require 'color-theme-tomorrow)
 
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories "~/dev/emacs/ac-dict")
@@ -57,7 +85,7 @@
 		   (if (y-or-n-p-with-timeout "Do you really want to exit Emacs ? " 4 nil)
 		       (save-buffers-kill-emacs))))
 
-					; allows syntax highlighting to work
+; allows syntax highlighting to work
 (global-font-lock-mode 1)
 
 ;; Load CEDET.
@@ -69,11 +97,11 @@
 ;(global-ede-mode 1)
 
 ;; * This enables the database and idle reparse engines
-(semantic-load-enable-minimum-features)
+;;(semantic-load-enable-minimum-features)
 
 ;; * This enables some tools useful for coding, such as summary mode
 ;;   imenu support, and the semantic navigator
-(semantic-load-enable-code-helpers)
+;;(semantic-load-enable-code-helpers)
 
 (global-srecode-minor-mode 1)            ; Enable template insertion menu
 
@@ -104,12 +132,57 @@
 
 (require 'color-theme)
 (color-theme-initialize)
-;(color-theme-calm-forest)
-(color-theme-solarized-dark)
+(color-theme-clarity)
+;;(color-theme-calm-forest)
+;;(color-theme-solarized-dark)
 
-(defun my-compile ()
-  "Use compile to run python programs"
-  (interactive)
-  (compile (concat "python " (buffer-name))))
-(setq compilation-scroll-output t)
-(local-set-key "\C-c\C-c" 'my-compile)
+;http://superuser.com/questions/296243/remap-command-key-in-mac-only-for-emacs
+;(setq mac-control-modifier 'command)
+;(setq mac-control-modifier 'meta)
+;(pc-selection-mode)
+
+;Show parenthesis
+(show-paren-mode t)
+
+;; Highlight regions and add special behaviors to regions.
+;; "C-h d transient" for more info
+(setq transient-mark-mode t)
+
+;; Display line and column numbers
+(setq line-number-mode t)
+(setq column-number-mode t)
+
+;; Make sure all backup files only live in one place
+(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+
+;; Frame title bar formatting to show full path of file
+(setq-default
+ frame-title-format
+ (list '((buffer-file-name " %f" (dired-directory
+				    dired-directory
+				      (revert-buffer-function " %b"
+							        ("%b - Dir:  " default-directory)))))))
+
+(setq-default
+ icon-title-format
+ (list '((buffer-file-name " %f" (dired-directory
+                                  dired-directory
+                                  (revert-buffer-function " %b"
+                                  ("%b - Dir:  " default-directory)))))))
+
+;; Org-mode
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(global-font-lock-mode 1)
+(setq org-directory        "~/Dropbox/MobileOrg")
+
+;; MobileOrg
+(setq org-mobile-directory "~/Dropbox/MobileOrg/")
+;;; Include all org files << key as it means all your org files will be parsed to the agenda.org of MobileOrg
+;;(setq org-agenda-files (file-expand-wildcards "~/Dropbox/MobileOrg/*.org"))
+;;; Set directory for pulling
+(setq org-mobile-inbox-for-pull "~/Dropbox/MobileOrg/")
+
+(setq org-todo-keywords
+      '((type "TODO(t)" "STARTED(s)" "DONE(d)" "WAITING(w)")))
